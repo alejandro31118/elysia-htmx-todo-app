@@ -1,5 +1,5 @@
 import { Todo } from '../types'
-import { TodoDisplay } from './todo-display'
+import { TodoItem } from './todo-item'
 import * as elements from 'typed-html'
 
 type TodoListProps = {
@@ -10,7 +10,7 @@ export function TodoList({ todos }: TodoListProps) {
   return (
     <div class='flex flex-col'>
       {todos.map((todo) => (
-        <TodoDisplay todo={todo} />
+        <TodoItem todo={todo} />
       ))}
     </div>
   )

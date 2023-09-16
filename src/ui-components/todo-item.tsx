@@ -1,11 +1,11 @@
 import { Todo } from '../types'
 import * as elements from 'typed-html'
 
-type TodoDisplayProps = {
+type TodoItemProps = {
   todo: Todo
 }
 
-export function TodoDisplay({ todo }: TodoDisplayProps) {
+export function TodoItem({ todo }: TodoItemProps) {
   return (
     <div class='flex flex-row space-x-3'>
       <h3>{todo.title}</h3>
@@ -15,8 +15,17 @@ export function TodoDisplay({ todo }: TodoDisplayProps) {
         name='completed'
         id='completed'
         checked={todo.completed}
+        hx-post={`/todos/complete/${todo.id}`}
+        hx-target='closest div'
+        hx-swap='outerHTML'
       />
-      <button>❌</button>
+      <button
+        hx-delete={`/todos/${todo.id}`}
+        hx-target='closest div'
+        hx-swap='outerHTML'
+      >
+        ❌
+      </button>
     </div>
   )
 }
