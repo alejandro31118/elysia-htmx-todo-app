@@ -12,13 +12,6 @@ import { eq } from 'drizzle-orm'
 
 migrate(db, { migrationsFolder: 'src/db/migrations' })
 
-const dbData: Todo[] = [
-  { id: 1, title: 'Do something', completed: false },
-  { id: 2, title: 'Go to the supermarket', description: 'Buy things', completed: true },
-]
-
-let lasTodotId = 2
-
 const paramIdSchema = {
   params: t.Object({
     id: t.Numeric()
@@ -52,15 +45,14 @@ const app = new Elysia()
     return <TodoList todos={data} />
   })
   .post('/todos/complete/:id', async ({ params }) => {
-    // Insert returning get is buggy so that's why I'm using all()[0]
+    // Insert returning get() is buggy so that's why I'm using all()[0]
     const oldTodo = await db.select()
       .from(todos)
       .where(eq(todos.id, params.id))
       .all()[0]
-    console.log('🚀 ~ file: index.tsx:59 ~ .post ~ oldTodo:', oldTodo)
 
     if (oldTodo) {
-      // Insert returning get is buggy so that's why I'm using all()[0]
+      // Insert returning get() is buggy so that's why I'm using all()[0]
       const updatedTodo = await db.update(todos)
         .set({ completed: !oldTodo.completed })
         .where(eq(todos.id, params.id))
@@ -76,7 +68,7 @@ const app = new Elysia()
       .run()
   }, paramIdSchema)
   .post('/todos', ({ body }) => {
-    // Insert returning get is buggy so that's why I'm using all()[0]
+    // Insert returning get() is buggy so that's why I'm using all()[0]
     const newTodo = db.insert(todos)
       .values(body)
       .returning()
