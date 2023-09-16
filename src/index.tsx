@@ -1,29 +1,12 @@
-import { Elysia, t } from 'elysia'
+import { Elysia } from 'elysia'
 import { html } from '@elysiajs/html'
-import * as elements from 'typed-html'
-import { Html } from './ui-components/html'
-import { Todo } from './types'
-import { TodoList } from './ui-components/todo-list'
-import { TodoItem } from './ui-components/todo-item'
+import { Html } from './ui-components'
 import { migrate } from 'drizzle-orm/bun-sqlite/migrator'
 import { db } from './db/config'
-import { todos } from './db/schema'
-import { eq } from 'drizzle-orm'
+import { todosGroup } from './routes/todos'
+import * as elements from 'typed-html'
 
 migrate(db, { migrationsFolder: 'src/db/migrations' })
-
-const paramIdSchema = {
-  params: t.Object({
-    id: t.Numeric()
-  })
-}
-
-const bodySchema = {
-  body: t.Object({
-    title: t.String(),
-    description: t.String()
-  })
-}
 
 const app = new Elysia()
   .use(html())
@@ -37,45 +20,7 @@ const app = new Elysia()
       />
     </Html>
   ))
-  .get('/todos', async () => {
-    const data = await db.select()
-      .from(todos)
-      .all()
-
-    return <TodoList todos={data} />
-  })
-  .post('/todos/complete/:id', async ({ params }) => {
-    // Insert returning get() is buggy so that's why I'm using all()[0]
-    const oldTodo = await db.select()
-      .from(todos)
-      .where(eq(todos.id, params.id))
-      .all()[0]
-
-    if (oldTodo) {
-      // Insert returning get() is buggy so that's why I'm using all()[0]
-      const updatedTodo = await db.update(todos)
-        .set({ completed: !oldTodo.completed })
-        .where(eq(todos.id, params.id))
-        .returning()
-        .all()[0]
-
-      return <TodoItem todo={updatedTodo} />
-    }
-  }, paramIdSchema)
-  .delete('/todos/:id', async ({ params }) => {
-    await db.delete(todos)
-      .where(eq(todos.id, params.id))
-      .run()
-  }, paramIdSchema)
-  .post('/todos', ({ body }) => {
-    // Insert returning get() is buggy so that's why I'm using all()[0]
-    const newTodo = db.insert(todos)
-      .values(body)
-      .returning()
-      .all()[0]
-
-    return <TodoItem todo={newTodo} />
-  }, bodySchema)
+  .use(todosGroup)
   .listen(3000)
 
 console.log(
