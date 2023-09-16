@@ -1,4 +1,5 @@
 import { Todo } from '../types'
+import { TodoForm } from './todo-form'
 import { TodoItem } from './todo-item'
 import * as elements from 'typed-html'
 
@@ -12,6 +13,8 @@ export function TodoList({ todos }: TodoListProps) {
       {todos.map((todo) => (
         <TodoItem todo={todo} />
       ))}
+
+      <TodoForm />
     </div>
   )
 }

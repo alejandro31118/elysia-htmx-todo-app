@@ -11,6 +11,21 @@ const dbData: Todo[] = [
   { id: 2, title: 'Go to the supermarket', description: 'Buy things', completed: true },
 ]
 
+let lasTodotId = 2
+
+const paramIdSchema = {
+  params: t.Object({
+    id: t.Numeric()
+  })
+}
+
+const bodySchema = {
+  body: t.Object({
+    title: t.String(),
+    description: t.String()
+  })
+}
+
 const app = new Elysia()
   .use(html())
   .get('/', ({ html }) => html(
@@ -30,23 +45,24 @@ const app = new Elysia()
       todo.completed = !todo.completed
       return <TodoItem todo={todo} />
     }
-  },
-  {
-    params: t.Object({
-      id: t.Numeric()
-    })
-  })
+  }, paramIdSchema)
   .delete('/todos/:id', ({ params }) => {
     const todo = dbData.find(todo => todo.id === params.id)
     if (todo) {
       dbData.splice(dbData.indexOf(todo), 1)
     }
-  },
-  {
-    params: t.Object({
-      id: t.Numeric()
-    })
-  })
+  }, paramIdSchema)
+  .post('/todos', ({ body }) => {
+    const newTodo: Todo = {
+      id: lasTodotId++,
+      title: body.title,
+      description: body.description,
+      completed: false
+    }
+
+    dbData.push(newTodo)
+    return <TodoItem todo={newTodo} />
+  }, bodySchema)
   .listen(3000)
 
 console.log(
