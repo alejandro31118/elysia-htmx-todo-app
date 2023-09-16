@@ -5,6 +5,10 @@ import { Html } from './ui-components/html'
 import { Todo } from './types'
 import { TodoList } from './ui-components/todo-list'
 import { TodoItem } from './ui-components/todo-item'
+import { migrate } from 'drizzle-orm/bun-sqlite/migrator'
+import { db } from './db/config'
+
+migrate(db, { migrationsFolder: 'src/db/migrations' })
 
 const dbData: Todo[] = [
   { id: 1, title: 'Do something', completed: false },

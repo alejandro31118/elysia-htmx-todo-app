@@ -3,14 +3,19 @@
   "version": "1.0.50",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.tsx"
+    "dev": "bun run --watch src/index.tsx",
+    "db:push": "bunx drizzle-kit generate:sqlite",
+    "db:studio": "bunx drizzle-kit studio --host 127.0.0.1 --port 3001 --verbose"
+
   },
   "dependencies": {
     "@elysiajs/html": "^0.6.5",
+    "drizzle-orm": "^0.28.6",
     "elysia": "latest"
   },
   "devDependencies": {
     "bun-types": "latest",
+    "drizzle-kit": "^0.19.13",
     "typed-html": "^3.0.1"
   },
   "module": "src/index.js"
