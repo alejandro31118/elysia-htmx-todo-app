@@ -7,6 +7,7 @@ export function TodoForm() {
       class='flex flex-col mt-5'
       hx-post='/todos'
       hx-swap='beforebegin'
+      _='on submit target.reset()'
     >
       <label for="title">Title</label>
       <input type="text" name="title" id="title" class='bg-gray-700' required='true' />

@@ -9,6 +9,7 @@ export const Html = ({ children }: Children) => `
         <title>Elysia HTMX - Todo App</title>
         <script src="https://unpkg.com/htmx.org@1.9.5"></script>
         <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://unpkg.com/hyperscript.org@0.9.11"></script>
     </head>
     ${children}
   </html>
