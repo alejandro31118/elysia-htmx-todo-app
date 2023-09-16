@@ -1,10 +1,10 @@
-import { Todo } from '../types'
+import { SelectTodo } from '../db/schema'
 import { TodoForm } from './todo-form'
 import { TodoItem } from './todo-item'
 import * as elements from 'typed-html'
 
 type TodoListProps = {
-  todos: Todo[]
+  todos: SelectTodo[]
 }
 
 export function TodoList({ todos }: TodoListProps) {

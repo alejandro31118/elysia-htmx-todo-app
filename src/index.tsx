@@ -7,6 +7,8 @@ import { TodoList } from './ui-components/todo-list'
 import { TodoItem } from './ui-components/todo-item'
 import { migrate } from 'drizzle-orm/bun-sqlite/migrator'
 import { db } from './db/config'
+import { todos } from './db/schema'
+import { eq } from 'drizzle-orm'
 
 migrate(db, { migrationsFolder: 'src/db/migrations' })
 
@@ -42,29 +44,41 @@ const app = new Elysia()
       />
     </Html>
   ))
-  .get('/todos', () => <TodoList todos={dbData} />)
-  .post('/todos/complete/:id', ({ params }) => {
-    const todo = dbData.find(todo => todo.id === params.id)
-    if (todo) {
-      todo.completed = !todo.completed
-      return <TodoItem todo={todo} />
+  .get('/todos', async () => {
+    const data = await db.select()
+      .from(todos)
+      .all()
+
+    return <TodoList todos={data} />
+  })
+  .post('/todos/complete/:id', async ({ params }) => {
+    const oldTodo = db.select()
+      .from(todos)
+      .where(eq(todos.id, params.id))
+      .get()
+
+    if (oldTodo) {
+      const updatedTodo = await db.update(todos)
+        .set({ completed: !oldTodo.completed })
+        .where(eq(todos.id, params.id))
+        .returning()
+        .get()
+
+      return <TodoItem todo={updatedTodo} />
     }
   }, paramIdSchema)
-  .delete('/todos/:id', ({ params }) => {
-    const todo = dbData.find(todo => todo.id === params.id)
-    if (todo) {
-      dbData.splice(dbData.indexOf(todo), 1)
-    }
+  .delete('/todos/:id', async ({ params }) => {
+    await db.delete(todos)
+      .where(eq(todos.id, params.id))
+      .run()
   }, paramIdSchema)
   .post('/todos', ({ body }) => {
-    const newTodo: Todo = {
-      id: lasTodotId++,
-      title: body.title,
-      description: body.description,
-      completed: false
-    }
+    // Insert returning get is buggy so that's why I'm using all()[0]
+    const newTodo = db.insert(todos)
+      .values(body)
+      .returning()
+      .all()[0]
 
-    dbData.push(newTodo)
     return <TodoItem todo={newTodo} />
   }, bodySchema)
   .listen(3000)

@@ -1,8 +1,8 @@
-import { Todo } from '../types'
 import * as elements from 'typed-html'
+import { SelectTodo } from '../db/schema'
 
 type TodoItemProps = {
-  todo: Todo
+  todo: SelectTodo
 }
 
 export function TodoItem({ todo }: TodoItemProps) {
