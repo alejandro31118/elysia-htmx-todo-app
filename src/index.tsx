@@ -52,17 +52,20 @@ const app = new Elysia()
     return <TodoList todos={data} />
   })
   .post('/todos/complete/:id', async ({ params }) => {
-    const oldTodo = db.select()
+    // Insert returning get is buggy so that's why I'm using all()[0]
+    const oldTodo = await db.select()
       .from(todos)
       .where(eq(todos.id, params.id))
-      .get()
+      .all()[0]
+    console.log('🚀 ~ file: index.tsx:59 ~ .post ~ oldTodo:', oldTodo)
 
     if (oldTodo) {
+      // Insert returning get is buggy so that's why I'm using all()[0]
       const updatedTodo = await db.update(todos)
         .set({ completed: !oldTodo.completed })
         .where(eq(todos.id, params.id))
         .returning()
-        .get()
+        .all()[0]
 
       return <TodoItem todo={updatedTodo} />
     }
