@@ -1,4 +1,3 @@
-import { Todo } from '../types'
 import * as elements from 'typed-html'
 
 export function TodoForm() {

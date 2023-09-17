@@ -3,7 +3,7 @@ import { db } from '../db/config'
 import { todos } from '../db/schema'
 import { TodoItem, TodoList } from '../ui-components'
 import * as elements from 'typed-html'
-import { eq } from 'drizzle-orm'
+import { eq, like } from 'drizzle-orm'
 
 const paramIdSchema = {
   params: t.Object({
@@ -20,10 +20,19 @@ const bodySchema = {
 
 export const todosGroup = new Elysia()
   .group('/todos', app => app
-    .get('/', async () => {
-      const data = await db.select()
-        .from(todos)
-        .all()
+    .get('/', async ({ query }) => {
+      const { title, completed } = query
+      const completedBool = completed == 'true'
+
+      const queryDb = db.select().from(todos)
+      if (completed) {
+        queryDb.where(eq(todos.completed, completedBool))
+      }
+      if (title) {
+        queryDb.where(like(todos.title, `%${title}%`))
+      }
+
+      const data = await queryDb.all()
 
       return <TodoList todos={data} />
     })
