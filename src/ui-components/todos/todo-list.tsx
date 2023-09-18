@@ -1,7 +1,5 @@
-import { SelectTodo } from '../db/schema'
-import { TodoFilter } from './todo-filter'
-import { TodoForm } from './todo-form'
-import { TodoItem } from './todo-item'
+import { SelectTodo } from '$/db/schema'
+import { TodoItem, TodoForm, TodoFilter } from '$/ui-components/todos'
 import * as elements from 'typed-html'
 
 type TodoListProps = {

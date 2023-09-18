@@ -1,5 +1,5 @@
 import * as elements from 'typed-html'
-import { SelectTodo } from '../db/schema'
+import { SelectTodo } from '$/db/schema'
 
 type TodoItemProps = {
   todo: SelectTodo
