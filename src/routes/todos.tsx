@@ -1,9 +1,10 @@
-import { Elysia, t } from 'elysia'
-import { db } from '../db/config'
-import { todos } from '../db/schema'
-import { TodoItem, TodoList } from '../ui-components'
+import { t } from 'elysia'
+import { db } from '$/db/config'
+import { todos } from '$/db/schema'
+import { TodoItem, TodoList } from '$/ui-components/todos'
 import * as elements from 'typed-html'
 import { eq, like } from 'drizzle-orm'
+import { ElysiaApp, app } from '$/index'
 
 const paramIdSchema = {
   params: t.Object({
@@ -18,7 +19,7 @@ const bodySchema = {
   })
 }
 
-export const todosGroup = new Elysia()
+export const addTodosGroupToApp = (app: ElysiaApp) => app
   .group('/todos', app => app
     .get('/', async ({ query }) => {
       const { title, completed } = query
