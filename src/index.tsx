@@ -3,14 +3,11 @@ import { html } from '@elysiajs/html'
 import { cookie } from '@elysiajs/cookie'
 import { jwt } from '@elysiajs/jwt'
 import { Html } from '$/ui-components/html'
-import { migrate } from 'drizzle-orm/bun-sqlite/migrator'
-import { db } from '$/db/config'
 import * as elements from 'typed-html'
 import { addTodosGroupToApp } from '$/routes/todos'
 
-migrate(db, { migrationsFolder: 'src/db/migrations' })
-
 export const app = new Elysia()
+  // @ts-ignore
   .use(html())
   .use(cookie())
   .use(jwt({ name: 'jwt', secret: 'VerySecretString' }))

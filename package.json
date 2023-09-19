@@ -4,7 +4,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.tsx",
-    "db:push": "bunx drizzle-kit generate:sqlite"
+    "db:push": "bunx drizzle-kit generate:sqlite",
+    "db:migrate": "bun src/db/migrate.ts"
   },
   "dependencies": {
     "@elysiajs/cookie": "^0.6.1",
