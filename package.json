@@ -4,19 +4,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.tsx",
-    "db:push": "bunx drizzle-kit generate:sqlite",
+    "db:generate": "bunx drizzle-kit generate:sqlite --config=drizzle.config.ts",
+    "db:push": "bunx drizzle-kit push:sqlite --config=drizzle.config.ts",
     "db:migrate": "bun src/db/migrate.ts"
   },
   "dependencies": {
     "@elysiajs/cookie": "^0.6.1",
     "@elysiajs/html": "^0.6.5",
     "@elysiajs/jwt": "^0.6.4",
-    "drizzle-orm": "^0.28.6",
     "elysia": "latest"
   },
   "devDependencies": {
     "bun-types": "latest",
-    "drizzle-kit": "^0.19.13",
     "typed-html": "^3.0.1"
   },
   "module": "src/index.js"
