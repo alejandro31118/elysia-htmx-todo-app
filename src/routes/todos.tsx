@@ -1,10 +1,9 @@
 import { t } from 'elysia'
 import { db } from '$/db/config'
-import { todos } from '$/db/schema'
 import { TodoItem, TodoList } from '$/ui-components/todos'
 import * as elements from 'typed-html'
-import { eq, like } from 'drizzle-orm'
-import { ElysiaApp, app } from '$/index'
+import { ElysiaApp } from '$/index'
+import { Todo } from '$/types'
 
 const paramIdSchema = {
   params: t.Object({
@@ -22,18 +21,19 @@ const bodySchema = {
 export const addTodosGroupToApp = (app: ElysiaApp) => app
   .group('/todos', app => app
     .get('/', async ({ query }) => {
-      const { title, completed } = query
-      const completedBool = completed == 'true'
+      let { title, completed } = query
+      title ||= null
 
-      const queryDb = db.select().from(todos)
+      let queryStr = 'SELECT title, description, completed FROM todos WHERE 1=1'
       if (completed) {
-        queryDb.where(eq(todos.completed, completedBool))
+        queryStr += ` AND completed = ${completed}`
       }
       if (title) {
-        queryDb.where(like(todos.title, `%${title}%`))
+        queryStr += ` AND title like '%${title}%'`
       }
 
-      const data = await queryDb.all()
+      const dbQuery = db.query(queryStr)
+      const data = dbQuery.all() as Todo[] | undefined
 
       return <TodoList todos={data} />
     })

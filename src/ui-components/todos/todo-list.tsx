@@ -1,16 +1,16 @@
-import { SelectTodo } from '$/db/schema'
+import { Todo } from '$/types'
 import { TodoItem, TodoForm, TodoFilter } from '$/ui-components/todos'
 import * as elements from 'typed-html'
 
 type TodoListProps = {
-  todos: SelectTodo[]
+  todos?: Todo[]
 }
 
 export function TodoList({ todos }: TodoListProps) {
   return (
     <div class='flex flex-col'>
       <TodoFilter />
-      {todos.map((todo) => (
+      {todos && todos.map((todo) => (
         <TodoItem todo={todo} />
       ))}
 

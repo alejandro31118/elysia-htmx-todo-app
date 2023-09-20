@@ -13,9 +13,9 @@ export function TodoFilter() {
       <input type="text" name="title" id="title" class='bg-gray-700' />
 
       <label for="completed">True</label>
-      <input type="radio" name="completed" id="completed" value='true' />
+      <input type="radio" name="completed" id="completed" value='1' />
       <label for="completed">False</label>
-      <input type="radio" name="completed" id="completed" value='false' />
+      <input type="radio" name="completed" id="completed" value='0' />
 
       <button type="submit">Filter</button>
     </form>
