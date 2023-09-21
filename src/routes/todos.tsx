@@ -38,34 +38,31 @@ export const addTodosGroupToApp = (app: ElysiaApp) => app
       return <TodoList todos={data} />
     })
     .post('/', ({ body }) => {
-      db.prepare('INSERT INTO todos (title, description, completed) VALUES ($title, $description, $completed)')
-        .run({ $title: body.title, $description: body?.description, $completed: 0 })
+      const inserted = db.prepare('INSERT INTO todos (title, description, completed) VALUES ($title, $description, $completed)')
+        .all({ $title: body.title, $description: body?.description, $completed: 0 })
 
-      const data = db.prepare('SELECT id, title, description, completed FROM todos ORDER BY id DESC LIMIT 1').get() as Todo | undefined
+      if (inserted) {
+        const data = db.prepare('SELECT id, title, description, completed FROM todos ORDER BY id DESC LIMIT 1').get() as Todo | undefined
 
-      return <TodoItem todo={data} />
+        return <TodoItem todo={data} />
+      }
     }, bodySchema)
     .post('/complete/:id', async ({ params }) => {
-      // Insert returning get() is buggy so that's why I'm using all()[0]
-      const oldTodo = await db.select()
-        .from(todos)
-        .where(eq(todos.id, params.id))
-        .all()[0]
+      const query = db.query('SELECT completed FROM todos WHERE id = ?1')
+      const oldTodo = query.get(params.id) as { completed: number } | null
 
       if (oldTodo) {
-        // Insert returning get() is buggy so that's why I'm using all()[0]
-        const updatedTodo = await db.update(todos)
-          .set({ completed: !oldTodo.completed })
-          .where(eq(todos.id, params.id))
-          .returning()
-          .all()[0]
+        const completed = oldTodo.completed === 0 ? 1 : 0
+        const updated = db.prepare('UPDATE todos SET completed = ?1 WHERE id = ?2').all(completed, params.id)
 
-        return <TodoItem todo={updatedTodo} />
+        if (updated) {
+          const data = db.query('SELECT id, title, description, completed FROM todos WHERE id = ?1').get(params.id) as Todo
+
+          return <TodoItem todo={data} />
+        }
       }
     }, paramIdSchema)
     .delete('/:id', async ({ params }) => {
-      await db.delete(todos)
-        .where(eq(todos.id, params.id))
-        .run()
+      db.prepare('DELETE FROM todos WHERE id = ?1').run(params.id)
     }, paramIdSchema)
   )
