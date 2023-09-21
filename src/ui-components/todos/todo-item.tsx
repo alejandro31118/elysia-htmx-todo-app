@@ -1,11 +1,15 @@
+import { Todo } from '$/types'
 import * as elements from 'typed-html'
-import { SelectTodo } from '$/db/schema'
 
 type TodoItemProps = {
-  todo: SelectTodo
+  todo: Todo | undefined
 }
 
 export function TodoItem({ todo }: TodoItemProps) {
+  if (!todo) {
+    return <div></div>
+  }
+
   return (
     <div class='flex flex-row space-x-3'>
       <h3>{todo.title}</h3>
@@ -14,7 +18,7 @@ export function TodoItem({ todo }: TodoItemProps) {
         type='checkbox'
         name='completed'
         id='completed'
-        checked={todo.completed}
+        checked={todo.completed == 1}
         hx-post={`/todos/complete/${todo.id}`}
         hx-target='closest div'
         hx-swap='outerHTML'

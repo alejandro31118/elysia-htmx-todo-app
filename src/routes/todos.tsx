@@ -24,7 +24,7 @@ export const addTodosGroupToApp = (app: ElysiaApp) => app
       let { title, completed } = query
       title ||= null
 
-      let queryStr = 'SELECT title, description, completed FROM todos WHERE 1=1'
+      let queryStr = 'SELECT id, title, description, completed FROM todos WHERE 1=1'
       if (completed) {
         queryStr += ` AND completed = ${completed}`
       }
@@ -38,13 +38,12 @@ export const addTodosGroupToApp = (app: ElysiaApp) => app
       return <TodoList todos={data} />
     })
     .post('/', ({ body }) => {
-      // Insert returning get() is buggy so that's why I'm using all()[0]
-      const newTodo = db.insert(todos)
-        .values(body)
-        .returning()
-        .all()[0]
+      db.prepare('INSERT INTO todos (title, description, completed) VALUES ($title, $description, $completed)')
+        .run({ $title: body.title, $description: body?.description, $completed: 0 })
 
-      return <TodoItem todo={newTodo} />
+      const data = db.prepare('SELECT id, title, description, completed FROM todos ORDER BY id DESC LIMIT 1').get() as Todo | undefined
+
+      return <TodoItem todo={data} />
     }, bodySchema)
     .post('/complete/:id', async ({ params }) => {
       // Insert returning get() is buggy so that's why I'm using all()[0]
